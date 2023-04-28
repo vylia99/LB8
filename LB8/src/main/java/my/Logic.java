@@ -14,6 +14,8 @@ import java.util.stream.Stream;
 
 
 public class Logic {
+
+
     public Logic() {
     }
 
@@ -73,40 +75,47 @@ public class Logic {
 
         return temp;
     }
-    public List<String> filterDiagnosis(List<Patient> patients){ //список діагнозів пацієнтів із вказанням кількості пацієнтів
-        Map<String, Integer> diagnosis = new HashMap<>();
+    //список діагнозів пацієнтів із вказанням кількості пацієнтів
+    public Map<String, Long> filterDiagnosis(List<Patient> patients){
+        Map<String, Long> diagnosis=filterDiagnosisCount(patients);
 
-        patients.stream().map(Patient::getDiagnosis).forEach(diagnoz -> diagnosis.put(diagnoz, diagnosis.getOrDefault(diagnoz, 0) + 1));
-        List<Map.Entry<String, Integer>> sorted = new ArrayList<>(diagnosis.entrySet());
-        sorted.sort(Map.Entry.<String, Integer>comparingByValue().reversed());
-
-        List<String> temp = sorted.stream().map(entry -> entry.getKey() + " - " + entry.getValue())
-                .collect(Collectors.toCollection(() -> new ArrayList<>(0)));
+        List<Map.Entry<String, Long>> sorted = new ArrayList<>(diagnosis.entrySet());
+        sorted.sort(Map.Entry.<String, Long>comparingByValue().reversed());
+        Map<String, Long> temp = sorted
+                .stream().collect(Collectors
+                        .toMap(Map.Entry::getKey,Map.Entry::getValue,(e1,e2)->e1,LinkedHashMap::new));
 
         return temp;
+
     }
-    public List<String> filterDiagnosisRegist(List<Patient> patients){ //список діагнозів пацієнтів, зареєстрованих у системі без повторів
+    //список діагнозів пацієнтів, зареєстрованих у системі без повторів
+    public List<String> filterDiagnosisRegist(List<Patient> patients){
 
         return patients.stream().flatMap(patient -> Stream.of(patient.getDiagnosis()))
                 .distinct().collect(Collectors.toList());
     }
 
-    public List<String> filterDiagnosisCount(List<Patient> patients){ //список діагнозів пацієнтів із вказанням кількості пацієнтів
-        List<String> diagnosisCount = new ArrayList<>();
-        boolean d=false;
-        int j=0;
-        for (Patient patient : patients) {
-            String diagnoz = patient.getDiagnosis();
+    //список діагнозів пацієнтів із вказанням кількості пацієнтів
+    public Map<String, Long> filterDiagnosisCount(List<Patient> patients ){
 
-            IntStream.range(0, j).anyMatch(p -> diagnosisCount.get(p).equals(diagnoz));
-            if (!d) {
-                diagnosisCount.set(j++, diagnoz);
-            }
-        }
-
-        return diagnosisCount;
+        return patients.stream()
+                .collect(Collectors
+                        .groupingBy(Patient::getDiagnosis,Collectors
+                                .counting()));
     }
+    //пошук у списку по прізвищю
+    public Patient searchBySurname(List<Patient> patients, String surname) {
+        return patients.stream().filter(patient -> patient.getSurname()
+                .equals(surname)).findFirst().orElse(null);
 
+
+    }
+    //видалення
+    public  List<Patient> removeBySurname(List<Patient> patients, Patient patient) {
+        patients.remove(patient);
+
+        return patients;
+    }
     public Patient scannerPatient(){
         Scanner s = new Scanner(System.in);
         System.out.println("Введіть id");

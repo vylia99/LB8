@@ -1,13 +1,11 @@
 package my;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class InputOutput {
     ArrayList<Patient> patients;
     Logic logic;
+
 
     public InputOutput() {
         logic = new Logic();
@@ -45,15 +43,31 @@ public class InputOutput {
     }
 
     public void printDiagnosis(List<Patient> patients) {
-        System.out.println(logic.filterDiagnosis(patients));;
-
-    }
+        Map <String, Long> diagnosis=logic.filterDiagnosis(patients);
+        printMap(diagnosis);
+          }
 
     public void printDiagnosisRegist(List<Patient> patients) {
         System.out.println(logic.filterDiagnosisRegist(patients));
     }
 
-    public void printDiagnosisCount(List<Patient> patients){
-        System.out.println(logic.filterDiagnosisCount(patients));
+    public void printDiagnosisCount(List<Patient>patients){
+        Map <String, Long> diagnosisCount=logic.filterDiagnosisCount(patients);
+        printMap(diagnosisCount);
     }
+
+    private static void printMap(Map<String, Long> diagnosisCount) {
+        for (Map.Entry q: diagnosisCount.entrySet()){
+            System.out.println("key: "+q.getKey()+" count: "+q.getValue());
+        }
+    }
+    public void printSearchBySurname(List<Patient> patients){
+        Scanner s = new Scanner(System.in);
+        System.out.println("Введіть прізвище для пошуку");
+        String sm = s.nextLine();
+        Patient patient = logic.searchBySurname(patients, sm);
+        System.out.println("Результат пошуку:");
+        System.out.println(patient);
+    }
+
 }

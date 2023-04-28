@@ -5,12 +5,13 @@ import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 
 public class Main {
     List<Patient> patients;
-    String fileName;
+     String fileName;
     public static void main(String[] args) {
         Main prog = new Main();
         prog.run();
@@ -20,7 +21,6 @@ public class Main {
     private void run() {
         Logic logic = new Logic();
         InputOutput printAll = new InputOutput();
-       // Json json = new Json();
         List<Patient> temp;
 
         while (true){
@@ -34,6 +34,7 @@ public class Main {
                         "що мають цей діагноз у порядку спадання цієї кількості.");
                 System.out.println("7: Вивести список діагнозів пацієнтів, зареєстрованих у системі без повторів");
                 System.out.println("8: для кожного діагнозу визначити кількість пацієнтів, яким він поставлений");
+                System.out.println("9: Знайти пацієнтів");
                 System.out.println("0: Вийти з програми");
 
                 Scanner sc = new Scanner(System.in);
@@ -99,7 +100,39 @@ public class Main {
                         fileName = sc.next();
                         patients = logic.readFromFile(fileName);
                         printAll.printDiagnosisCount(patients);
+                        break;
+                    case 9:
+                        System.out.println("Введіть назву файлу");
+                        fileName = sc.next();
+                        patients = logic.readFromFile(fileName);
+                        printAll.printSearchBySurname(patients);
+
+                        System.out.println("Бажаєте видалити пацієнта?");
+                            while (true) {
+                                System.out.println("1: Так");
+                                System.out.println("2: Ні");
+                                Scanner s1 = new Scanner(System.in);
+                                int ks = sc.nextInt();
+                                switch (ks) {
+                                    case 1:
+                                        System.out.println("Введіть прізвище для пошуку");
+                                        String pr = s1.next();
+                                        Patient pat=logic.searchBySurname(patients,pr);
+                                        logic.removeBySurname(patients,pat);
+                                        System.out.println("Введіть назву файлу");
+                                        fileName = s1.next();
+                                        path = Paths.get(fileName);
+                                        logic.writeToFile(path,patients);
+                                        System.out.println("Зміни збереженно");
+                                        break;
+                                    case 2:
+                                        System.out.println("Зміни скасовано");
+                                        break;
+                                }break;
+                            }
+
                 }   }
+
         }
     }
 
